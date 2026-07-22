@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="index.css">
+<style>
+  body{margin:0;background:#e9e3da;display:grid;place-items:center;min-height:100vh;}
+  /* isola só o palco 3D, sem depender do layout da seção */
+  #madeiras-tipos{padding:80px;}
+  .row{display:flex;gap:80px;flex-wrap:wrap;justify-content:center;}
+</style></head>
+<body>
+<section id="madeiras-tipos"><div class="row">
+  <div class="mtipos-3d"><div class="mtipos-stage" id="s1" data-floor3d>
+    <div class="mtipos-stack" data-floor3d-stack>
+      <div class="floor-face floor-top"></div>
+      <div class="floor-face floor-bottom"></div>
+      <div class="floor-face floor-edge floor-edge-f"></div>
+      <div class="floor-face floor-edge floor-edge-l"></div>
+      <div class="floor-face floor-edge floor-edge-r"></div>
+      <div class="floor-face floor-edge floor-groove-lip floor-groove-lip-up"></div>
+      <div class="floor-face floor-edge floor-groove-lip floor-groove-lip-lo"></div>
+      <div class="floor-face floor-groove floor-groove-inner"></div>
+      <div class="floor-face floor-groove floor-groove-floor"></div>
+      <div class="floor-face floor-groove floor-groove-ceil"></div>
+    </div>
+    <div class="mtipos-shadow"></div>
+  </div></div>
+</div></section>
+<script>
+  // vista aproximada de frente para conferir o perfil macho/fêmea
+  const stack=document.querySelector('[data-floor3d-stack]');
+  const q=new URLSearchParams(location.search);
+  const rx=q.get('rx')||58, rz=q.get('rz')||-38;
+  stack.style.transform=`rotateX(${rx}deg) rotateZ(${rz}deg)`;
+</script>
+</body></html>
