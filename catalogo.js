@@ -1177,7 +1177,7 @@
           ['cabreuva-branca', 'Cabreúva Branca', 'Mais clara e delicada, é valorizada por sua suavidade e por criar atmosferas leves e acolhedoras.'],
           ['pinho-de-riga', 'Pinho de Riga', 'Clara e de tom amarelado suave, com nós marcantes que remetem à madeira das construções históricas brasileiras.'],
           ['tauari', 'Tauari', 'Clara e homogênea, o tauari ilumina os ambientes, oferecendo um visual moderno e minimalista.'],
-          ['carvalho-europeu', 'Carvalho Europeu', 'Madeira nobre e versátil, com veios marcantes e tonalidade clara, perfeita para ambientes sofisticados e atemporais.'],
+          
           
           ['peroba-do-campo', 'Peroba do Campo', 'Tradicional e charmosa, sua coloração variada entre o rosado e o dourado confere autenticidade e beleza natural.'],
           ['cabreuva-dourada', 'Cabreúva Dourada', 'Apresenta brilho natural e cor dourada, com veios elegantes que proporcionam luxo e vitalidade.'],
