@@ -409,16 +409,25 @@
         img.src = src;
       });
 
+      const KNOWN_LOCAL = {
+        'pisos/brazil': [2,3,4,5,6,7,8,9,10,11].map(n => `pisos/brazil/${String(n).padStart(2,'0')}.webp`),
+        'pisos/eternos': [1,2,3,4,5].map(n => `pisos/eternos/${String(n).padStart(2,'0')}.webp`),
+        'pisos/unicos': [1,2,3,4].map(n => `pisos/unicos/${String(n).padStart(2,'0')}.webp`)
+      };
+
       async function findLocalImages(folder) {
+        if (KNOWN_LOCAL[folder]) return KNOWN_LOCAL[folder];
         const found = [];
         let misses = 0;
         for (let i = 1; i <= MAX_LOCAL; i++) {
           const num = String(i).padStart(2, '0');
-          let hit = false;
-          for (const ext of EXTS) {
-            try { const src = await probe(`${folder}/${num}.${ext}`); found.push(src); hit = true; break; } catch {}
+          try {
+            const src = await probe(`${folder}/${num}.webp`);
+            found.push(src);
+            misses = 0;
+          } catch {
+            if (++misses >= 2) break;
           }
-          if (!hit) { if (++misses >= 3) break; } else { misses = 0; }
         }
         return found;
       }

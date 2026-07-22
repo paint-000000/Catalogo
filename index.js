@@ -17,37 +17,21 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced){ sticky.style.setProperty('--hp','1'); return; }
 
-  let vpTop = 0, vpHeight = 0, vh = 0, runway = 0;
-  function measure(){
-    vh = window.innerHeight;
-    vpHeight = vp.offsetHeight;
-    runway = vpHeight - vh;
-    const rect = vp.getBoundingClientRect();
-    vpTop = rect.top + window.scrollY;
-  }
-
   let ticking = false;
-  let lastP = -1;
   function update(){
     ticking = false;
-    if (runway <= 0){
-      if (lastP !== 0) { sticky.style.setProperty('--hp','0'); lastP = 0; }
-      return;
-    }
-    const scrolled = Math.max(0, window.scrollY - vpTop);
+    const vh = window.innerHeight;
+    const runway = vp.offsetHeight - vh;                 // distância de pin (px)
+    if (runway <= 0){ sticky.style.setProperty('--hp','0'); return; }
+    const scrolled = Math.max(0, -vp.getBoundingClientRect().top);
+    /* completa a transição em ~80% do runway e segura o restante */
     const p = Math.min(scrolled / (runway * 0.8), 1);
-    const fixedP = Number(p.toFixed(4));
-    if (fixedP !== lastP) {
-      sticky.style.setProperty('--hp', fixedP.toString());
-      lastP = fixedP;
-    }
+    sticky.style.setProperty('--hp', p.toFixed(4));
   }
-
   window.addEventListener('scroll', () => {
     if (!ticking){ requestAnimationFrame(update); ticking = true; }
   }, { passive: true });
-  window.addEventListener('resize', () => { measure(); update(); });
-  measure();
+  window.addEventListener('resize', update, { passive: true });
   update();
 })();
 
@@ -55,34 +39,20 @@
 (function(){
   const logo = document.querySelector('.topbar-logo');
   if (!logo) return;
-  const lightElements = [...document.querySelectorAll('#sobre, #tech-scroll, .texturas-scroll, #madeiras-tipos')];
-  if (!lightElements.length) return;
-
+  const light = [...document.querySelectorAll('#sobre, #tech-scroll, .texturas-scroll, #madeiras-tipos')];
+  if (!light.length) return;
   const LINE = 26; /* altura aprox. do centro do logo na navbar */
-  let ranges = [];
-
-  function measure(){
-    const currentScroll = window.scrollY;
-    ranges = lightElements.map(s => {
-      const rect = s.getBoundingClientRect();
-      const top = rect.top + currentScroll - LINE;
-      return { top, bottom: top + s.offsetHeight };
-    });
-  }
-
   let ticking = false;
   function update(){
     ticking = false;
-    const sy = window.scrollY;
-    const over = ranges.some(r => sy >= r.top && sy <= r.bottom);
+    const over = light.some(s => {
+      const r = s.getBoundingClientRect();
+      return r.top <= LINE && r.bottom >= LINE;
+    });
     logo.classList.toggle('is-dark', over);
   }
-
-  window.addEventListener('scroll', () => {
-    if (!ticking){ ticking = true; requestAnimationFrame(update); }
-  }, { passive: true });
-  window.addEventListener('resize', () => { measure(); update(); });
-  measure();
+  window.addEventListener('scroll', ()=>{ if(!ticking){ ticking=true; requestAnimationFrame(update); } }, { passive:true });
+  window.addEventListener('resize', update, { passive: true });
   update();
 })();
 
@@ -112,30 +82,18 @@
   const labels = Array.from(sec.querySelectorAll('[data-tech-label]'));
   const clamp = (v) => Math.max(0, Math.min(1, v));
 
-  let secTop = 0, secHeight = 0, vh = 0;
-  function measure(){
-    vh = window.innerHeight;
-    secHeight = sec.offsetHeight;
-    const rect = sec.getBoundingClientRect();
-    secTop = rect.top + window.scrollY;
-  }
-
   let ticking = false;
   const update = () => {
     ticking = false;
-    const sy = window.scrollY;
-    if (sy + vh < secTop || sy > secTop + secHeight) return;
-
-    const total = secHeight - vh;
+    const r = sec.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return;
+    const total = sec.offsetHeight - window.innerHeight;
     if (total <= 0) return;
-
-    const relTop = secTop - sy;
-    const p = clamp(-relTop / total);
+    const p = clamp(-r.top / total);
     const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
     const spread = window.innerWidth <= 768 ? 62 : 120;
     const gap = 10 + eased * spread;
     const n = planks.length;
-
     planks.forEach((el, i) => {
       el.style.transform = `translateZ(${((i - (n - 1) / 2) * gap).toFixed(1)}px)`;
     });
@@ -153,8 +111,7 @@
 
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', () => { measure(); onScroll(); }, { passive: true });
-  measure();
+  window.addEventListener('resize', onScroll, { passive: true });
   update();
 })();
 

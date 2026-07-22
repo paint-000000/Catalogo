@@ -1935,3 +1935,9 @@
     position: relative;
     z-index: 1;
 }
+
+/* Render & Layout Performance */
+.photo-stream-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
+}

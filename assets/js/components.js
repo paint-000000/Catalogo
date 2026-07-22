@@ -573,9 +573,14 @@ class ParketNav extends HTMLElement {
     this._overlay.addEventListener('click', (e) => {
       if (e.target === this._overlay) this._closeSearch();
     });
+    let searchDebounceTimer = null;
     this._input.addEventListener('input', (e) => {
       const isDelete = !!(e.inputType && e.inputType.startsWith('delete'));
-      this._handleType(e.target.value, isDelete);
+      const val = e.target.value;
+      if (searchDebounceTimer) cancelAnimationFrame(searchDebounceTimer);
+      searchDebounceTimer = requestAnimationFrame(() => {
+        this._handleType(val, isDelete);
+      });
     });
     this._input.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this._closeSearch();
