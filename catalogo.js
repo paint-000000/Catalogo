@@ -1119,38 +1119,6 @@
       const parallaxRescan = new MutationObserver(scanMouseParallax);
       parallaxRescan.observe(document.body, { childList: true, subtree: true });
 
-      // ─── AUTO-SCROLL: se ficar 2s no hero sem interação, desce pra próxima seção
-      (function autoAdvanceHero() {
-        const nextSection = document.getElementById('tech-scroll')
-          || document.getElementById('sobre')
-          || document.getElementById('processo')
-          || document.getElementById('products-index')
-          || document.querySelector('main');
-        if (!nextSection) return;
-
-        let cancelled = false;
-        const cancel = () => {
-          cancelled = true;
-          window.removeEventListener('scroll', onInteract);
-          window.removeEventListener('wheel', onInteract);
-          window.removeEventListener('touchstart', onInteract);
-          window.removeEventListener('keydown', onInteract);
-        };
-        const onInteract = () => cancel();
-
-        // Qualquer interação cancela o auto-scroll
-        window.addEventListener('scroll', onInteract, { passive: true, once: true });
-        window.addEventListener('wheel', onInteract, { passive: true, once: true });
-        window.addEventListener('touchstart', onInteract, { passive: true, once: true });
-        window.addEventListener('keydown', onInteract, { once: true });
-
-        setTimeout(() => {
-          if (cancelled) return;
-          if (window.scrollY > 10) return; // já saiu do topo (interagiu)
-          nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 2000);
-      })();
-
       // ─── BACK TO TOP ─────────────────────────
       const topBtn = document.getElementById('back-to-top');
 

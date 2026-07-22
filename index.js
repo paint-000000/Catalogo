@@ -39,7 +39,7 @@
 (function(){
   const logo = document.querySelector('.topbar-logo');
   if (!logo) return;
-  const light = [...document.querySelectorAll('#sobre, #tech-scroll, .texturas-scroll, #madeiras-tipos')];
+  const light = [...document.querySelectorAll('#sobre, .texturas-scroll, #madeiras-tipos')];
   if (!light.length) return;
   const LINE = 26; /* altura aprox. do centro do logo na navbar */
   let ticking = false;
