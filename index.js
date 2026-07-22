@@ -5,10 +5,10 @@
    2. Reveal on scroll — fades escopados ao #sobre
    3. Logo escuro sobre seções claras
    4. 02 Tecnologia (#tech-scroll) — camadas 3D dirigidas por scroll
+   5. Madeiras — piso 3D interativo
    ═══════════════════════════════════════════════════════════════ */
 
-/* Hero split — progresso 0→1 conforme rola dentro do runway do #hero-viewport.
-   A imagem recua para a direita (painel) e a cópia sobe/aparece à esquerda. */
+/* Hero split — progresso 0→1 conforme rola dentro do runway do #hero-viewport. */
 (function(){
   const vp = document.getElementById('hero-viewport');
   const sticky = document.getElementById('hero-sticky');
@@ -17,21 +17,37 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced){ sticky.style.setProperty('--hp','1'); return; }
 
+  let vpTop = 0, vpHeight = 0, vh = 0, runway = 0;
+  function measure(){
+    vh = window.innerHeight;
+    vpHeight = vp.offsetHeight;
+    runway = vpHeight - vh;
+    const rect = vp.getBoundingClientRect();
+    vpTop = rect.top + window.scrollY;
+  }
+
   let ticking = false;
+  let lastP = -1;
   function update(){
     ticking = false;
-    const vh = window.innerHeight;
-    const runway = vp.offsetHeight - vh;                 // distância de pin (px)
-    if (runway <= 0){ sticky.style.setProperty('--hp','0'); return; }
-    const scrolled = Math.max(0, -vp.getBoundingClientRect().top);
-    /* completa a transição em ~80% do runway e segura o restante */
+    if (runway <= 0){
+      if (lastP !== 0) { sticky.style.setProperty('--hp','0'); lastP = 0; }
+      return;
+    }
+    const scrolled = Math.max(0, window.scrollY - vpTop);
     const p = Math.min(scrolled / (runway * 0.8), 1);
-    sticky.style.setProperty('--hp', p.toFixed(4));
+    const fixedP = Number(p.toFixed(4));
+    if (fixedP !== lastP) {
+      sticky.style.setProperty('--hp', fixedP.toString());
+      lastP = fixedP;
+    }
   }
+
   window.addEventListener('scroll', () => {
     if (!ticking){ requestAnimationFrame(update); ticking = true; }
   }, { passive: true });
-  window.addEventListener('resize', update);
+  window.addEventListener('resize', () => { measure(); update(); });
+  measure();
   update();
 })();
 
@@ -39,29 +55,52 @@
 (function(){
   const logo = document.querySelector('.topbar-logo');
   if (!logo) return;
-  const light = [...document.querySelectorAll('#sobre, #tech-scroll, .texturas-scroll, #madeiras-tipos')];
-  if (!light.length) return;
+  const lightElements = [...document.querySelectorAll('#sobre, #tech-scroll, .texturas-scroll, #madeiras-tipos')];
+  if (!lightElements.length) return;
+
   const LINE = 26; /* altura aprox. do centro do logo na navbar */
+  let ranges = [];
+
+  function measure(){
+    const currentScroll = window.scrollY;
+    ranges = lightElements.map(s => {
+      const rect = s.getBoundingClientRect();
+      const top = rect.top + currentScroll - LINE;
+      return { top, bottom: top + s.offsetHeight };
+    });
+  }
+
   let ticking = false;
   function update(){
     ticking = false;
-    const over = light.some(s => {
-      const r = s.getBoundingClientRect();
-      return r.top <= LINE && r.bottom >= LINE;
-    });
+    const sy = window.scrollY;
+    const over = ranges.some(r => sy >= r.top && sy <= r.bottom);
     logo.classList.toggle('is-dark', over);
   }
-  window.addEventListener('scroll', ()=>{ if(!ticking){ ticking=true; requestAnimationFrame(update); } }, { passive:true });
-  window.addEventListener('resize', update);
+
+  window.addEventListener('scroll', () => {
+    if (!ticking){ ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', () => { measure(); update(); });
+  measure();
   update();
 })();
 
 /* reveal on scroll (escopado ao #sobre) */
 (function(){
-  const io=new IntersectionObserver((es)=>{
-    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  },{threshold:0.18});
-  document.querySelectorAll('#sobre .fade').forEach((el,i)=>{ el.style.transitionDelay=(i%3*0.08)+'s'; io.observe(el); });
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.18 });
+
+  document.querySelectorAll('#sobre .fade').forEach((el, i) => {
+    el.style.transitionDelay = (i % 3 * 0.08) + 's';
+    io.observe(el);
+  });
 })();
 
 /* Tecnologia — camadas 3D dirigidas por scroll (seção #tech-scroll) */
@@ -72,18 +111,31 @@
   const shadow = sec.querySelector('[data-plank-shadow]');
   const labels = Array.from(sec.querySelectorAll('[data-tech-label]'));
   const clamp = (v) => Math.max(0, Math.min(1, v));
+
+  let secTop = 0, secHeight = 0, vh = 0;
+  function measure(){
+    vh = window.innerHeight;
+    secHeight = sec.offsetHeight;
+    const rect = sec.getBoundingClientRect();
+    secTop = rect.top + window.scrollY;
+  }
+
   let ticking = false;
   const update = () => {
     ticking = false;
-    const r = sec.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > window.innerHeight) return;
-    const total = sec.offsetHeight - window.innerHeight;
-    const p = clamp(-r.top / total);
+    const sy = window.scrollY;
+    if (sy + vh < secTop || sy > secTop + secHeight) return;
+
+    const total = secHeight - vh;
+    if (total <= 0) return;
+
+    const relTop = secTop - sy;
+    const p = clamp(-relTop / total);
     const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-    /* separação menor no mobile p/ as camadas não vazarem sobre o texto */
     const spread = window.innerWidth <= 768 ? 62 : 120;
     const gap = 10 + eased * spread;
     const n = planks.length;
+
     planks.forEach((el, i) => {
       el.style.transform = `translateZ(${((i - (n - 1) / 2) * gap).toFixed(1)}px)`;
     });
@@ -98,9 +150,11 @@
       el.style.transform = on ? 'none' : 'translateY(14px)';
     });
   };
+
   const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  window.addEventListener('resize', () => { measure(); onScroll(); }, { passive: true });
+  measure();
   update();
 })();
 
@@ -110,7 +164,6 @@
   const stack = document.querySelector('#madeiras-tipos [data-floor3d-stack]');
   if (!stage || !stack) return;
 
-  /* ângulos iniciais (mesmo tilt do piso da seção anterior) */
   let rotX = 58, rotZ = -38;
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
   let raf = 0;
@@ -121,31 +174,52 @@
   const schedule = () => { if (!raf) raf = requestAnimationFrame(render); };
 
   let dragging = false, lastX = 0, lastY = 0;
-  const start = (x, y) => { dragging = true; lastX = x; lastY = y; stage.classList.add('is-grabbing'); };
+
   const move = (x, y) => {
     if (!dragging) return;
-    /* horizontal gira em torno do eixo vertical; vertical inclina o piso */
     rotZ -= (x - lastX) * 0.4;
-    /* movimento 3D liberado (8°–88°): o encaixe agora é só a fêmea recuada
-       para dentro (sem lingueta projetada), então a peça é quase convexa e o
-       preserve-3d não tem mais faces salientes para errar a ordem. */
     rotX = clamp(rotX - (y - lastY) * 0.4, 8, 88);
     lastX = x; lastY = y;
     schedule();
   };
-  const end = () => { dragging = false; stage.classList.remove('is-grabbing'); };
+
+  const onMouseMove = (e) => move(e.clientX, e.clientY);
+  const onMouseUp = () => end();
+  const onTouchMove = (e) => {
+    if (!dragging) return;
+    const t = e.touches[0];
+    if (e.cancelable) e.preventDefault();
+    move(t.clientX, t.clientY);
+  };
+  const onTouchEnd = () => end();
+
+  const start = (x, y) => {
+    dragging = true;
+    lastX = x;
+    lastY = y;
+    stage.classList.add('is-grabbing');
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mouseup', onMouseUp, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+  };
+
+  const end = () => {
+    if (!dragging) return;
+    dragging = false;
+    stage.classList.remove('is-grabbing');
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('mouseup', onMouseUp);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('touchend', onTouchEnd);
+  };
 
   stage.addEventListener('mousedown', (e) => { e.preventDefault(); start(e.clientX, e.clientY); });
-  window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
-  window.addEventListener('mouseup', end);
-
   stage.addEventListener('touchstart', (e) => {
-    const t = e.touches[0]; start(t.clientX, t.clientY);
+    const t = e.touches[0];
+    start(t.clientX, t.clientY);
   }, { passive: true });
-  stage.addEventListener('touchmove', (e) => {
-    const t = e.touches[0]; e.preventDefault(); move(t.clientX, t.clientY);
-  }, { passive: false });
-  window.addEventListener('touchend', end);
 
   render();
 })();
+

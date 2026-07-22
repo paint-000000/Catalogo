@@ -303,7 +303,7 @@
 }
 /* base (4ª, mais embaixo) — 3ª textura de madeira */
 #tech-scroll [data-plank="0"]{
-  background-image:linear-gradient(rgba(22,13,7,.30),rgba(22,13,7,.30)),url('tecnologia/madeira-03.jpg');
+  background-image:linear-gradient(rgba(22,13,7,.30),rgba(22,13,7,.30)),url('tecnologia/madeira-03.webp');
   background-color:#dcc4a6;
   border:1px solid rgba(0,0,0,.25);box-shadow:0 2px 0 rgba(0,0,0,.35);
 }
@@ -650,7 +650,7 @@
 }
 #madeiras-tipos .floor-edge::before{
   content:"";position:absolute;top:50%;left:50%;
-  background-image:url('tecnologia/borda-engenheirado.jpg');
+  background-image:url('tecnologia/borda-engenheirado.webp');
   background-repeat:no-repeat;background-position:center;
   background-size:100% 260%;
 }
