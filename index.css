@@ -78,6 +78,7 @@
   position:absolute;left:50%;bottom:2.5rem;transform:translateX(-50%);
   z-index:22;display:flex;flex-direction:column;align-items:center;gap:.85rem;
   opacity:calc(1 - var(--hp) * 2.2);pointer-events:none;
+  text-align: center;
 }
 #hero-sticky .hero-scroll-label{
   font-size:var(--text-caption);font-weight:400;
