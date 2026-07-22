@@ -491,11 +491,8 @@
 #tech-scroll {
   height: 400vh;
   position: relative;
-  /* acima da seção de baixo (z:21) p/ sobrepô-la */
   background: var(--preto);
   color: var(--branco-95);
-  margin-bottom: -14vh;
-  /* borda preta invade a seção de baixo */
   z-index: 21;
 }
 
