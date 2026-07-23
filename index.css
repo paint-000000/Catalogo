@@ -21,7 +21,6 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
   height: 100svh;
   overflow: hidden;
   display: block;
@@ -223,7 +222,6 @@
   --t-95: rgba(0, 0, 0, .9);
   --t-72: rgba(0, 0, 0, .66);
   --t-55: rgba(0, 0, 0, .52);
-  --t-40: rgba(0, 0, 0, .38);
   --t-10: rgba(0, 0, 0, .1);
   --accent: #9a6638;
   position: relative;
@@ -515,15 +513,6 @@
   z-index: 3;
 }
 
-#tech-scroll .tech-eyebrow {
-  display: block;
-  font-size: var(--text-caption);
-  letter-spacing: .5em;
-  text-transform: uppercase;
-  color: var(--branco-55);
-  margin-bottom: 1rem;
-}
-
 #tech-scroll .tech-title {
   margin: 0;
   font-weight: 200;
@@ -681,27 +670,6 @@
   color: var(--branco-72);
 }
 
-/* Rodapé da seção */
-#tech-scroll .tech-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--branco-10);
-  margin: 0 6vw;
-  padding: 1rem 0 clamp(1.5rem, 3vw, 2.5rem);
-}
-
-#tech-scroll .tech-footer span {
-  font-size: var(--text-caption);
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--branco-40);
-}
-
-#tech-scroll .tech-page {
-  font-variant-numeric: tabular-nums;
-}
-
 /* ── Tecnologia no mobile: palco centralizado em cima, legendas embaixo ── */
 @media (max-width:768px) {
   #tech-scroll {
@@ -713,10 +681,6 @@
     align-items: flex-start;
     gap: .5rem;
     padding: clamp(1.5rem, 6vw, 2rem) 7vw 0;
-  }
-
-  #tech-scroll .tech-eyebrow {
-    margin-bottom: .5rem;
   }
 
   #tech-scroll .tech-title {
@@ -1058,14 +1022,7 @@
 }
 
 /* Topo: título + intro à esquerda, piso 3D à direita */
-#madeiras-tipos .mtipos-top {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-  gap: clamp(2.5rem, 5vw, 5rem);
-  align-items: center;
-  margin-bottom: clamp(3rem, 6vw, 5rem);
-}
-
+#madeiras-tipos .mtipos-top { display: grid; grid-template-columns: minmax(0px, 1.05fr) minmax(0px, 0.95fr); align-items: center; margin-bottom: clamp(3rem, 6vw, 5rem); gap: clamp(2.5rem, 5vw, 5rem); row-gap: ; column-gap: ; }
 /* Cabeçalho */
 #madeiras-tipos .mtipos-head {
   margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
@@ -1200,9 +1157,12 @@
    mantendo as lâminas sempre atravessando a espessura. */
 #madeiras-tipos .floor-edge {
   overflow: hidden;
-  background: #7c5230;
+ 
   box-shadow: inset 0 0 22px rgba(0, 0, 0, .3),
     inset 0 1px 0 rgba(255, 255, 255, .1);
+      background-image: url('tecnologia/borda-engenheirado.webp');
+       background-position: center;
+  background-size: 100% 260%;
 }
 
 #madeiras-tipos .floor-edge::before {
@@ -1222,20 +1182,7 @@
   height: var(--t);
   transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--h) / 2));
   filter: brightness(1.02);
-}
 
-#madeiras-tipos .floor-edge-b {
-  width: var(--w);
-  height: var(--t);
-  transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--h) / 2));
-  filter: brightness(.8);
-}
-
-#madeiras-tipos .floor-edge-f::before,
-#madeiras-tipos .floor-edge-b::before {
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -50%);
 }
 
 /* faces esquerda/direita: imagem girada 90° para as lâminas atravessarem a espessura */
@@ -1277,14 +1224,6 @@
   top: 0;
   height: 17%;
   border-bottom: 1.5px solid rgba(34, 18, 8, .75);
-}
-
-#madeiras-tipos .floor-edge-b::after {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 17%;
-  border-top: 1.5px solid rgba(34, 18, 8, .75);
 }
 
 #madeiras-tipos .floor-edge-l::after {
@@ -1467,10 +1406,6 @@
   background: var(--ink-40);
 }
 
-#madeiras-tipos .mtipos-list--eng li::before {
-  background: var(--accent);
-}
-
 /* Fecho */
 #madeiras-tipos .mtipos-outro {
   max-width: 44rem;
@@ -1606,21 +1541,6 @@
   margin: clamp(1.5rem, 3vw, 2rem) 0;
 }
 
-
-#madeiras-tipos .mtipos-subtitle {
-
-  font-family: var(--font-body);
-
-  font-size: .75rem;
-  font-weight: 500;
-
-  letter-spacing: .16em;
-  text-transform: uppercase;
-
-  color: var(--ink-55);
-
-  margin: 0 0 1.25rem;
-}
 
 
 #madeiras-tipos .mtipos-list {
